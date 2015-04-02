@@ -2,3 +2,4 @@
 *.devhelper
 library/bdImportCmd/DevHelper/Generated
 library/bdImportCmd/DevHelper/XFCP
+FileSums.php
