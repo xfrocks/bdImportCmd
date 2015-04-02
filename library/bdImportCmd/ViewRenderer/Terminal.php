@@ -35,14 +35,19 @@ class bdImportCmd_ViewRenderer_Terminal extends XenForo_ViewRenderer_Abstract
 
             switch ($templateName) {
                 case 'import_step_run':
-                    if (!empty($viewOutput['stepInfo']['title'])
-                        && !empty($viewOutput['message'])
-                    ) {
-                        bdImportCmd_Helper_Terminal::log(
-                            '%s = %s',
-                            $viewOutput['stepInfo']['title'],
-                            $viewOutput['message']
-                        );
+                    if (!empty($viewOutput['stepInfo']['title'])) {
+                        if (!empty($viewOutput['message'])) {
+                            bdImportCmd_Helper_Terminal::log(
+                                '%s = %s',
+                                $viewOutput['stepInfo']['title'],
+                                $viewOutput['message']
+                            );
+                        } else {
+                            bdImportCmd_Helper_Terminal::log(
+                                '%s = N/A',
+                                $viewOutput['stepInfo']['title']
+                            );
+                        }
                         $handled = true;
                     }
                     break;
@@ -52,7 +57,13 @@ class bdImportCmd_ViewRenderer_Terminal extends XenForo_ViewRenderer_Abstract
                 bdImportCmd_Helper_Terminal::log('templateName = %s', $templateName);
 
                 foreach ($viewOutput as $key => $value) {
-                    bdImportCmd_Helper_Terminal::log('%s = %s', $key, var_export($value, true));
+                    if (is_object($value)) {
+                        $string = strval($value);
+                    } else {
+                        $string = var_export($value, true);
+                    }
+
+                    bdImportCmd_Helper_Terminal::log('%s = %s', $key, $string);
                 }
 
                 bdImportCmd_Helper_Terminal::stop();
