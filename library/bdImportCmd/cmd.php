@@ -77,6 +77,25 @@ if (IMPORT_CMD_FORK > 0) {
     $oldData = $dataRegistryModel->get('importSession');
     $mergedData = XenForo_Application::mapMerge($oldData, $forkData);
     $dataRegistryModel->set('importSession', $mergedData);
+} elseif (!empty($params['forks'])) {
+    $forks = XenForo_Application::getDb()->fetchAll('
+        SELECT data_key, data_value
+        FROM xf_data_registry
+        WHERE data_key LIKE "importSession%"
+    ');
+
+    foreach ($forks as $fork) {
+        $forkData = unserialize($fork['data_value']);
+
+        echo(sprintf(
+            "Fork #%d: %s at %d\n",
+            intval(substr($fork['data_key'], -1)),
+            $forkData['step'] ? $forkData['step'] : 'N/A',
+            $forkData['stepStart']
+        ));
+    }
+
+    die("No more forks.\n");
 }
 
 while (true) {
