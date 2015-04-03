@@ -58,7 +58,11 @@ class bdImportCmd_ViewRenderer_Terminal extends XenForo_ViewRenderer_Abstract
 
                 foreach ($viewOutput as $key => $value) {
                     if (is_object($value)) {
-                        $string = strval($value);
+                        if ($value instanceof Exception) {
+                            $string = $value->getMessage();
+                        } else {
+                            $string = strval($value);
+                        }
                     } else {
                         $string = var_export($value, true);
                     }

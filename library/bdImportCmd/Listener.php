@@ -6,6 +6,7 @@ class bdImportCmd_Listener
     {
         static $classes = array(
             'XenForo_ControllerAdmin_Import',
+            'XenForo_Model_DataRegistry',
             'XenForo_Model_Import',
         );
 

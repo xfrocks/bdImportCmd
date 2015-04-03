@@ -7,11 +7,15 @@ class bdImportCmd_ControllerResponse_PossibleSteps extends XenForo_ControllerRes
 
     public function dispatch(bdImportCmd_XenForo_FrontController $fc)
     {
+        if (IMPORT_CMD_FORK > 0) {
+            bdImportCmd_Helper_Terminal::error('Step finished, run with `mergeFork=%d` to continue.', IMPORT_CMD_FORK);
+        }
+
         if (empty($this->possibleSteps)) {
             bdImportCmd_Helper_Terminal::error('No possible steps to continue.');
         }
         $step = reset($this->possibleSteps);
-            bdImportCmd_Helper_Terminal::log('Auto-dispatch step %s...', $step);
+        bdImportCmd_Helper_Terminal::log('Auto-dispatch step %s...', $step);
 
         $oldRequest = $fc->getRequest();
 
