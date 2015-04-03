@@ -17,6 +17,7 @@ class bdImportCmd_XenForo_Model_DataRegistry extends XFCP_bdImportCmd_XenForo_Mo
 
 		$result = parent::get('importSession');
 		$result['stepStart'] = IMPORT_CMD_STEP_START;
+        $result['_bdImportCmd_stepStart'] = IMPORT_CMD_STEP_START;
 		$result['stepOptions'] = array();
 		return $result;
 	}

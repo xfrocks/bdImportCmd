@@ -88,9 +88,10 @@ if (IMPORT_CMD_FORK > 0) {
         $forkData = unserialize($fork['data_value']);
 
         echo(sprintf(
-            "Fork #%d: %s at %d\n",
+            "Fork #%d (since %d): step %s at %d\n",
             intval(substr($fork['data_key'], -1)),
-            $forkData['step'] ? $forkData['step'] : 'N/A',
+            !empty($forkData['_bdImportCmd_stepStart']) ? $forkData['_bdImportCmd_stepStart'] : 0,
+            !empty($forkData['step']) ? $forkData['step'] : 'N/A',
             $forkData['stepStart']
         ));
     }
