@@ -7,6 +7,7 @@ $paramsDefault = array(
     'forkContinue' => 0,
     'stepStart' => 0,
     'mergeFork' => 0,
+    'deleteForks' => '',
 );
 $params = $paramsDefault;
 if (!empty($argv[1])) {
@@ -71,12 +72,54 @@ if (IMPORT_CMD_FORK > 0) {
         die("Requested fork not found to merge.\n");
     }
 
-    $forkData = unserialize($fork);
     /** @var XenForo_Model_DataRegistry $dataRegistryModel */
     $dataRegistryModel = XenForo_Model::create('XenForo_Model_DataRegistry');
+    $allForks = XenForo_Application::getDb()->fetchAll('
+        SELECT data_key, data_value
+        FROM xf_data_registry
+        WHERE data_key LIKE "importSession%"
+    ');
+    $otherForkIds = array();
+    foreach ($allForks as $allFork) {
+        $allForkId = intval(substr($allFork['data_key'], -1));
+        if ($allForkId == 0) {
+            continue;
+        }
+        if ($allForkId == $params['mergeFork']) {
+            continue;
+        }
+
+        $otherForkIds[] = $allForkId;
+    }
+    sort($otherForkIds);
+    if (!empty($otherForkIds)) {
+        if (empty($params['deleteForks'])) {
+            die("Other forks have been found, `deleteForks` is required.\n");
+        } else {
+            // if there are forks (other than the main one and the one being merged)
+            // `deleteForks` must be specified to confirm the deletion
+            // we can of course delete them all but doing so seems to be dangerous
+            $deleteForks = explode(',', $params['deleteForks']);
+            $deleteForks = array_map('intval', $deleteForks);
+            sort($deleteForks);
+
+            if (serialize($otherForkIds) !== serialize($deleteForks)) {
+                die("`deleteForks` must acknowledge all other forks. Use `forks=1` to check.\n");
+            }
+
+            foreach ($otherForkIds as $otherForkId) {
+                $dataRegistryModel->delete('importSession' . $otherForkId);
+            }
+        }
+    }
+
+    $forkData = unserialize($fork);
     $oldData = $dataRegistryModel->get('importSession');
     $mergedData = XenForo_Application::mapMerge($oldData, $forkData);
     $dataRegistryModel->set('importSession', $mergedData);
+    $dataRegistryModel->delete('importSession' . $params['mergeFork']);
+
+    die("Merged fork " . $params['mergeFork'] . "\n");
 } elseif (!empty($params['forks'])) {
     $forks = XenForo_Application::getDb()->fetchAll('
         SELECT data_key, data_value
