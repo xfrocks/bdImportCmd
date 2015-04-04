@@ -142,9 +142,11 @@ if (IMPORT_CMD_FORK > 0) {
     die("No more forks.\n");
 }
 
-while (true) {
-    $jobStart = microtime(true);
+$forkTimeStart = microtime(true);
 
+while (true) {
+
+    $dispatchTimeStart = microtime(true);
     $controllerResponse = $fc->dispatch($routeMatch);
 
     if ($controllerResponse instanceof bdImportCmd_ControllerResponse_PossibleSteps) {
@@ -153,12 +155,14 @@ while (true) {
 
     $fc->renderView($controllerResponse, $viewRenderer);
 
-    $jobTime = microtime(true) - $jobStart;
+    $forkTime = microtime(true) - $forkTimeStart;
+    $dispatchTime = microtime(true) - $dispatchTimeStart;
     $memoryUsage = memory_get_usage() / 1048576;
     $memoryUsagePeak = memory_get_peak_usage() / 1048576;
     bdImportCmd_Helper_Terminal::log(
-        "\t job time = %.6f, mem = %.2fM/%.2fM",
-        $jobTime,
+        "\t job #%d: time = %.2fs (total %.2fs), mem = %.2fM/%.2fM",
+        IMPORT_CMD_FORK,
+        $dispatchTime, $forkTime,
         $memoryUsage, $memoryUsagePeak
     );
 }
