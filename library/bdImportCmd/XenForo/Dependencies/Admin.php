@@ -19,13 +19,7 @@ abstract class bdImportCmd_XenForo_Dependencies_Admin extends _XenForo_Dependenc
     {
         parent::preLoadData();
 
-        $addOns = XenForo_Application::get('addOns');
-        if (empty($addOns['bdImportCmd'])) {
-            /** @var XenForo_Model_AddOn $addOnModel */
-            $addOnModel = XenForo_Model::create('XenForo_Model_AddOn');
-            $addOnModel->installAddOnXmlFromFile(dirname(dirname(dirname(__FILE__))) . '/addon-bdImportCmd.xml');
-            bdImportCmd_Helper_Terminal::error('Auto-installed add-on.');
-        }
+        XenForo_CodeEvent::addListener('load_class', array('bdImportCmd_Listener', 'load_class_cmd'));
     }
 
     public function getViewRenderer(Zend_Controller_Response_Http $response, $responseType, Zend_Controller_Request_Http $request)
