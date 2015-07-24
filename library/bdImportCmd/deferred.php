@@ -31,6 +31,7 @@ $autoloaderPath = $fileDir . '/library/XenForo/Autoloader.php';
 if (!file_exists($autoloaderPath)) {
     die("The current directory must be XenForo root.\n");
 }
+/** @noinspection PhpIncludeInspection */
 require($autoloaderPath);
 XenForo_Autoloader::getInstance()->setupAutoloader($fileDir . '/library');
 XenForo_Application::initialize($fileDir . '/library', $fileDir);
@@ -112,11 +113,31 @@ switch ($action) {
         }
         /* finished overwriting task execute data */
 
+        $GLOBALS['_terminate'] = false;
+        if (function_exists('pcntl_signal')) {
+            $signalFunc = create_function('', 'echo("\nTerminating...");$GLOBALS["_terminate"] = true;');
+            pcntl_signal(SIGINT, $signalFunc);
+            pcntl_signal(SIGTERM, $signalFunc);
+        } else {
+            echo("Signal support is not available, Ctrl+C to stop running may cause incomplete task data!\n");
+            $signalFunc = '';
+        }
+
         echo(sprintf("Start running task %s @ %s...\n", $uniqueKey, gmdate('c')));
         $i = 0;
         $startTime = microtime(true);
         while (true) {
-            $response = $deferredModel->runDeferred($deferred, 0, $status, $canCancel);
+            if ($signalFunc !== '') {
+                pcntl_signal_dispatch();
+            }
+
+            if ($GLOBALS['_terminate'] === true) {
+                $response = false;
+            } else {
+                $response = $deferredModel->runDeferred($deferred, 0, $status, $canCancel);
+                sleep(1);
+            }
+
             if (is_numeric($response)) {
                 // run again
                 $deferred = $deferredModel->getDeferredById($response);
