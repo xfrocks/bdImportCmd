@@ -112,8 +112,9 @@ switch ($action) {
         }
         /* finished overwriting task execute data */
 
-        echo(sprintf("Running task %s...\n", $uniqueKey));
+        echo(sprintf("Start running task %s @ %s...\n", $uniqueKey, gmdate('c')));
         $i = 0;
+        $startTime = microtime(true);
         while (true) {
             $response = $deferredModel->runDeferred($deferred, 0, $status, $canCancel);
             if (is_numeric($response)) {
@@ -121,16 +122,32 @@ switch ($action) {
                 $deferred = $deferredModel->getDeferredById($response);
 
                 if ($i % 200 === 0) {
+                    $mem = memory_get_usage();
+                    $mem = sprintf('%sM', number_format($mem / 1024 / 1024, 1));
+
+                    $time = microtime(true) - $startTime;
+                    $timeUnit = 's';
+                    if ($time > 60) {
+                        $time /= 60;
+                        $timeUnit = 'm';
+                    }
+                    if ($time > 60) {
+                        $time /= 60;
+                        $timeUnit = 'h';
+                    }
+                    $time = sprintf('%s%s', number_format($time, 1), $timeUnit);
+
                     if (preg_match('#\((?<number>[^\)]+)\)$#', $status, $matches)) {
-                        echo($matches['number']);
+                        echo(sprintf('%s (mem=%s, time=%s)', $matches['number'], $mem, $time));
                     } else {
-                        echo(sprintf("\n%s\n", $status));
+                        echo(sprintf("\n%s / mem=%s / time=%s\n", $status, $mem, $time));
                     }
                 } else {
                     echo('.');
                 }
             } elseif ($response === false) {
-                echo("Done!\n");
+                echo("Done\n\n");
+                echo(sprintf("Finished running task %s @ %s\n", $uniqueKey, gmdate('c')));
                 break;
             } else {
                 echo(sprintf("Unknown response: %s", var_export($response, true)));
