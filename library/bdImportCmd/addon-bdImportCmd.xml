@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="bdImportCmd" title="[bd] Import Cmd" version_string="0.9-dev" version_id="1" url="" install_callback_class="" install_callback_method="" uninstall_callback_class="" uninstall_callback_method="">
+<addon addon_id="bdImportCmd" title="[bd] Import Cmd" version_string="1.0.0" version_id="1000000" url="" install_callback_class="" install_callback_method="" uninstall_callback_class="" uninstall_callback_method="">
   <admin_navigation/>
   <admin_permissions/>
   <admin_style_properties/>
@@ -9,6 +9,7 @@
   <code_event_listeners>
     <listener event_id="container_admin_params" execute_order="10" callback_class="bdImportCmd_Listener" callback_method="container_params" active="1" hint="" description=""/>
     <listener event_id="container_public_params" execute_order="10" callback_class="bdImportCmd_Listener" callback_method="container_params" active="1" hint="" description=""/>
+    <listener event_id="file_health_check" execute_order="10" callback_class="bdImportCmd_Listener" callback_method="file_health_check" active="1" hint="" description=""/>
     <listener event_id="front_controller_pre_view" execute_order="10" callback_class="bdImportCmd_Listener" callback_method="front_controller_pre_view" active="1" hint="" description=""/>
   </code_event_listeners>
   <cron/>
