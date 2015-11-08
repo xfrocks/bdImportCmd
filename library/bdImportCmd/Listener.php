@@ -2,13 +2,24 @@
 
 class bdImportCmd_Listener
 {
-    public static function load_class($class, array &$extend)
+    public static function front_controller_pre_view(
+        /** @noinspection PhpUnusedParameterInspection */
+        XenForo_FrontController $fc,
+        XenForo_ControllerResponse_Abstract &$controllerResponse,
+        XenForo_ViewRenderer_Abstract &$viewRenderer,
+        array &$containerParams)
     {
-        static $classes = array();
+        // disable deferred task for json responses
+        XenForo_Application::$autoDeferredIds = array();
+    }
 
-        if (in_array($class, $classes, true)) {
-            $extend[] = 'bdImportCmd_' . $class;
-        }
+    public static function container_params(
+        /** @noinspection PhpUnusedParameterInspection */
+        array &$params,
+        XenForo_Dependencies_Abstract $dependencies)
+    {
+        // disable deferred task for pages (mostly cron)
+        $params['hasAutoDeferred'] = false;
     }
 
     public static function load_class_cmd($class, array &$extend)
@@ -22,5 +33,10 @@ class bdImportCmd_Listener
         if (in_array($class, $classes, true)) {
             $extend[] = 'bdImportCmd_' . $class;
         }
+    }
+
+    public static function file_health_check(XenForo_ControllerAdmin_Abstract $controller, array &$hashes)
+    {
+        $hashes += bdImportCmd_FileSums::getHashes();
     }
 }

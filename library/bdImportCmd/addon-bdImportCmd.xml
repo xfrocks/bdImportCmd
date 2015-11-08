@@ -7,7 +7,9 @@
   <admin_template_modifications/>
   <code_events/>
   <code_event_listeners>
-    <listener event_id="load_class" execute_order="10" callback_class="bdImportCmd_Listener" callback_method="load_class" active="1" hint="" description=""/>
+    <listener event_id="container_admin_params" execute_order="10" callback_class="bdImportCmd_Listener" callback_method="container_params" active="1" hint="" description=""/>
+    <listener event_id="container_public_params" execute_order="10" callback_class="bdImportCmd_Listener" callback_method="container_params" active="1" hint="" description=""/>
+    <listener event_id="front_controller_pre_view" execute_order="10" callback_class="bdImportCmd_Listener" callback_method="front_controller_pre_view" active="1" hint="" description=""/>
   </code_event_listeners>
   <cron/>
   <email_templates/>
