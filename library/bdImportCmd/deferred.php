@@ -94,6 +94,13 @@ switch ($action) {
             }
         }
         if (empty($deferred)) {
+            // try to resolve class name
+            if (class_exists($uniqueKey)) {
+                $deferredId = $deferredModel->defer($uniqueKey, array(), null, true);
+                $deferred = $deferredModel->getDeferredById($deferredId);
+            }
+        }
+        if (empty($deferred)) {
             echo(sprintf("Task %s could not be found.\n", $uniqueKey));
             break;
         }
