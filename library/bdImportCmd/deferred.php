@@ -44,32 +44,38 @@ $deferredModel = XenForo_Model::create('XenForo_Model_Deferred');
 
 switch ($action) {
     case 'list':
+        function printArray(array $array, array $parents = array())
+        {
+            foreach ($array as $key => $value) {
+                if (is_array($value)) {
+                    $childParents = $parents;
+                    $childParents[] = $key;
+                    printArray($value, $childParents);
+                } else {
+                    $echoPaths = $parents;
+                    $echoPaths[] = $key;
+                    $echoFirst = array_shift($echoPaths);
+                    echo(sprintf("  %s%s = %s\n",
+                        $echoFirst,
+                        count($echoPaths) > 0 ? sprintf('[%s]', implode('][', $echoPaths)) : '',
+                        var_export($value, true)
+                    ));
+                }
+            }
+        }
+
         $runnable = $deferredModel->getRunnableDeferreds(true);
         echo("Available tasks:\n");
         foreach ($runnable as $_runnable) {
             echo(sprintf('Task %2$d %3$s: `php %1$s --run=%4$s`', $argv[0],
                 $_runnable['deferred_id'],
                 $_runnable['execute_class'],
-                $_runnable['unique_key']));
+                !empty($_runnable['unique_key']) ? $_runnable['unique_key'] : $_runnable['deferred_id']));
             echo("\n");
 
-            $executeData = unserialize($_runnable['execute_data']);
-            if (!empty($executeData['batch'])) {
-                echo(sprintf("  batch=%d\n", $executeData['batch']));
-            }
-            if (!empty($executeData['start'])) {
-                echo(sprintf("  start=%d\n", $executeData['start']));
-            }
-
-            if ($_runnable['execute_class'] === 'SearchIndex'
-                && !empty($executeData['extra_data'])
-            ) {
-                if (!empty($executeData['extra_data']['current_type'])) {
-                    echo(sprintf("  extra_data[current_type]=%s\n", $executeData['extra_data']['current_type']));
-                }
-                if (!empty($executeData['extra_data']['type_start'])) {
-                    echo(sprintf("  extra_data[type_start]=%d\n", $executeData['extra_data']['type_start']));
-                }
+            $executeData = @unserialize($_runnable['execute_data']);
+            if (is_array($executeData)) {
+                printArray($executeData, array('params'));
             }
 
             echo("\n");
