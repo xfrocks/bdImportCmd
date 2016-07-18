@@ -94,7 +94,9 @@ switch ($action) {
         $runnable = $deferredModel->getRunnableDeferreds(true);
         $deferred = null;
         foreach ($runnable as $_runnable) {
-            if ($_runnable['unique_key'] === $uniqueKey) {
+            if ($_runnable['unique_key'] === $uniqueKey
+                || intval($_runnable['deferred_id']) === intval($uniqueKey)
+            ) {
                 $deferred = $_runnable;
                 break; // foreach
             }
