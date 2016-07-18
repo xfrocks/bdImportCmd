@@ -2,9 +2,15 @@
 
 define('DEFERRED_CMD', true);
 
+$config = array(
+    'runsPerReport' => 20,
+    'eachRunSeconds' => 30,
+    'memoryLimit' => 100 * 1024 * 1014, // 100M
+);
+
 /* start parsing command line options */
-$getoptShort = '';
-$getoptLong = array();
+$getoptShort = 'c::';
+$getoptLong = array('config::');
 // action list
 $getoptShort .= 'l';
 $getoptLong[] = 'list';
@@ -16,6 +22,13 @@ $getoptShort .= 'p::';
 $getoptLong[] = 'params::';
 // parse options
 $opt = getopt($getoptShort, $getoptLong);
+if (!empty($opt['c']) || !empty($opt['config'])) {
+    $configOpt = !empty($opt['c']) ? $opt['c'] : $opt['config'];
+    parse_str($configOpt, $configOpt);
+    if (!empty($configOpt)) {
+        $config = array_merge($config, $configOpt);
+    }
+}
 // verify requested action via options
 $action = '';
 if (isset($opt['l']) || isset($opt['list'])) {
@@ -41,6 +54,10 @@ $dependencies->preLoadData();
 /** @var XenForo_Model_Deferred $deferredModel */
 $deferredModel = XenForo_Model::create('XenForo_Model_Deferred');
 /* finished bootstrap-ing XenForo */
+
+foreach ($config as $configKey => $configValue) {
+    echo(sprintf("\$config[%s] = %s\n", $configKey, var_export($configValue, true)));
+}
 
 switch ($action) {
     case 'list':
@@ -140,6 +157,7 @@ switch ($action) {
 
         echo(sprintf("Start running task %s @ %s...\n", $uniqueKey, gmdate('c')));
         $i = 0;
+        $iStep = max(1, $config['runsPerReport']);
         $startTime = microtime(true);
         while (true) {
             if ($signalFunc !== '') {
@@ -149,16 +167,22 @@ switch ($action) {
             if ($GLOBALS['_terminate'] === true) {
                 $response = false;
             } else {
-                $response = $deferredModel->runDeferred($deferred, 0, $status, $canCancel);
+                $response = $deferredModel->runDeferred($deferred, $config['eachRunSeconds'], $status, $canCancel);
                 sleep(1);
             }
 
             if (is_numeric($response)) {
-                // run again
-                $deferred = $deferredModel->getDeferredById($response);
+                $mem = memory_get_usage();
 
-                if ($i % 200 === 0) {
-                    $mem = memory_get_usage();
+                if ($mem < $config['memoryLimit']) {
+                    $deferred = $deferredModel->getDeferredById($response);
+                } else {
+                    $GLOBALS['_terminate'] = true;
+                    $i = $iStep;
+                    echo("Terminating due to memory constrain...\n");
+                }
+
+                if ($i % $iStep === 0) {
                     $mem = sprintf('%sM', number_format($mem / 1024 / 1024, 1));
 
                     $time = microtime(true) - $startTime;
