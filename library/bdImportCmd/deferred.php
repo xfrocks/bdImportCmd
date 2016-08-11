@@ -22,13 +22,6 @@ $getoptShort .= 'p::';
 $getoptLong[] = 'params::';
 // parse options
 $opt = getopt($getoptShort, $getoptLong);
-if (!empty($opt['c']) || !empty($opt['config'])) {
-    $configOpt = !empty($opt['c']) ? $opt['c'] : $opt['config'];
-    parse_str($configOpt, $configOpt);
-    if (!empty($configOpt)) {
-        $config = array_merge($config, $configOpt);
-    }
-}
 // verify requested action via options
 $action = '';
 if (isset($opt['l']) || isset($opt['list'])) {
@@ -59,6 +52,17 @@ if (XenForo_Application::isRegistered('_bdCloudServerHelper_readonly')) {
 $deferredModel = XenForo_Model::create('XenForo_Model_Deferred');
 /* finished bootstrap-ing XenForo */
 
+$configXF = XenForo_Application::getConfig()->get('bdImportCmd');
+if (!empty($configXF)) {
+    $config = array_merge($config, is_array($configXF) ? $configXF : $configXF->toArray());
+}
+if (!empty($opt['c']) || !empty($opt['config'])) {
+    $configOpt = !empty($opt['c']) ? $opt['c'] : $opt['config'];
+    parse_str($configOpt, $configOpt);
+    if (!empty($configOpt)) {
+        $config = array_merge($config, $configOpt);
+    }
+}
 foreach ($config as $configKey => $configValue) {
     echo(sprintf("\$config[%s] = %s\n", $configKey, var_export($configValue, true)));
 }
