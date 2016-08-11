@@ -51,6 +51,10 @@ XenForo_Application::initialize($fileDir . '/library', $fileDir);
 $dependencies = new XenForo_Dependencies_Public();
 $dependencies->preLoadData();
 
+if (XenForo_Application::isRegistered('_bdCloudServerHelper_readonly')) {
+    die('Cannot run with [bd] Cloud Server Helper READONLY mode enabled.');
+}
+
 /** @var XenForo_Model_Deferred $deferredModel */
 $deferredModel = XenForo_Model::create('XenForo_Model_Deferred');
 /* finished bootstrap-ing XenForo */
