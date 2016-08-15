@@ -214,9 +214,11 @@ switch ($action) {
                     echo('.');
                 }
             } elseif ($response === false) {
-                echo("Done\n\n");
-                echo(sprintf("Finished running task %s @ %s\n", $uniqueKey, gmdate('c')));
-                break;
+                if (empty($GLOBALS['_terminate'])) {
+                    echo("Done\n\n");
+                    echo(sprintf("Finished running task %s @ %s\n", $uniqueKey, gmdate('c')));
+                }
+                break; // while(true)
             } else {
                 echo(sprintf("Unknown response: %s", var_export($response, true)));
                 break; // while(true)
