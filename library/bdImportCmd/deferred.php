@@ -31,18 +31,7 @@ if (isset($opt['l']) || isset($opt['list'])) {
 }
 /* finished parsing command line options */
 
-/* start bootstrap-ing XenForo */
-$fileDir = getcwd();
-$autoloaderPath = $fileDir . '/library/XenForo/Autoloader.php';
-if (!file_exists($autoloaderPath)) {
-    die("The current directory must be XenForo root.\n");
-}
-/** @noinspection PhpIncludeInspection */
-require($autoloaderPath);
-XenForo_Autoloader::getInstance()->setupAutoloader($fileDir . '/library');
-XenForo_Application::initialize($fileDir . '/library', $fileDir);
-$dependencies = new XenForo_Dependencies_Public();
-$dependencies->preLoadData();
+require('./bootstrap.php');
 
 if (XenForo_Application::isRegistered('_bdCloudServerHelper_readonly')) {
     die('Cannot run with [bd] Cloud Server Helper READONLY mode enabled.');
@@ -50,7 +39,6 @@ if (XenForo_Application::isRegistered('_bdCloudServerHelper_readonly')) {
 
 /** @var XenForo_Model_Deferred $deferredModel */
 $deferredModel = XenForo_Model::create('XenForo_Model_Deferred');
-/* finished bootstrap-ing XenForo */
 
 $configXF = XenForo_Application::getConfig()->get('bdImportCmd');
 if (!empty($configXF)) {
