@@ -8,6 +8,10 @@ $config = array(
     'memoryLimit' => 100 * 1024 * 1014, // 100M
 );
 
+if (ini_get('memory_limit') == -1) {
+    $config['memoryLimit'] = 0;
+}
+
 /* start parsing command line options */
 $getoptShort = 'c::';
 $getoptLong = array('config::');
@@ -170,7 +174,7 @@ switch ($action) {
             if (is_numeric($response)) {
                 $mem = memory_get_usage();
 
-                if ($mem < $config['memoryLimit']) {
+                if ($config['memoryLimit'] > 0 && $mem < $config['memoryLimit']) {
                     $deferred = $deferredModel->getDeferredById($response);
                 } else {
                     $GLOBALS['_terminate'] = true;
