@@ -35,7 +35,7 @@ if (isset($opt['l']) || isset($opt['list'])) {
 }
 /* finished parsing command line options */
 
-require('./bootstrap.php');
+require(dirname(__FILE__) . '/bootstrap.php');
 
 if (XenForo_Application::isRegistered('_bdCloudServerHelper_readonly')) {
     die('Cannot run with [bd] Cloud Server Helper READONLY mode enabled.');
