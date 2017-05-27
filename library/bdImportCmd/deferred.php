@@ -174,7 +174,7 @@ switch ($action) {
             if (is_numeric($response)) {
                 $mem = memory_get_usage();
 
-                if ($config['memoryLimit'] > 0 && $mem < $config['memoryLimit']) {
+                if ($config['memoryLimit'] <= 0 || $mem < $config['memoryLimit']) {
                     $deferred = $deferredModel->getDeferredById($response);
                 } else {
                     $GLOBALS['_terminate'] = true;
