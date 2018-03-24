@@ -147,7 +147,10 @@ switch ($action) {
 
         $GLOBALS['_terminate'] = false;
         if (function_exists('pcntl_signal')) {
-            $signalFunc = create_function('', 'echo("\nTerminating...");$GLOBALS["_terminate"] = true;');
+            $signalFunc = function () {
+                echo("\nTerminating...");
+                $GLOBALS["_terminate"] = true;
+            };
             pcntl_signal(SIGINT, $signalFunc);
             pcntl_signal(SIGTERM, $signalFunc);
         } else {
