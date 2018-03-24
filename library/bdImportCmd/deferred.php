@@ -3,9 +3,10 @@
 define('DEFERRED_CMD', true);
 
 $config = array(
-    'runsPerReport' => 20,
     'eachRunSeconds' => 30,
+    'maxRuns' => 0,
     'memoryLimit' => 100 * 1024 * 1014, // 100M
+    'runsPerReport' => 20,
 );
 
 if (ini_get('memory_limit') == -1) {
@@ -181,7 +182,7 @@ switch ($action) {
                     $deferred = $deferredModel->getDeferredById($response);
                 } else {
                     $GLOBALS['_terminate'] = true;
-                    $i = $iStep;
+                    $iStep = 1;
                     echo("Terminating due to memory constrain...\n");
                 }
 
@@ -220,6 +221,11 @@ switch ($action) {
             }
 
             $i++;
+
+            if ($config['maxRuns'] > 0 && $i >= $config['maxRuns']) {
+                $GLOBALS['_terminate'] = true;
+                echo("Terminating because of maxRuns limit...\n");
+            }
         }
         break;
     default:
