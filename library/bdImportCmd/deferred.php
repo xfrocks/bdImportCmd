@@ -227,6 +227,13 @@ switch ($action) {
                 echo("Terminating because of maxRuns limit...\n");
             }
         }
+
+        if (XenForo_Application::debugMode()) {
+            $debugHtml = XenForo_Debug::getDebugHtml();
+            $debugHtml = strip_tags($debugHtml);
+            echo $debugHtml;
+        }
+
         break;
     default:
         echo("Action could not be recognized...\n");
