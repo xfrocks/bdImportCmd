@@ -73,7 +73,8 @@ switch ($action) {
                     $echoPaths = $parents;
                     $echoPaths[] = $key;
                     $echoFirst = array_shift($echoPaths);
-                    echo(sprintf("  %s%s = %s\n",
+                    echo(sprintf(
+                        "  %s%s = %s\n",
                         $echoFirst,
                         count($echoPaths) > 0 ? sprintf('[%s]', implode('][', $echoPaths)) : '',
                         var_export($value, true)
@@ -85,10 +86,13 @@ switch ($action) {
         $runnable = $deferredModel->getRunnableDeferreds(true);
         echo("Available tasks:\n");
         foreach ($runnable as $_runnable) {
-            echo(sprintf('Task %2$d %3$s: `php %1$s --run=%4$s`', $argv[0],
+            echo(sprintf(
+                'Task %2$d %3$s: `php %1$s --run=%4$s`',
+                $argv[0],
                 $_runnable['deferred_id'],
                 $_runnable['execute_class'],
-                !empty($_runnable['unique_key']) ? $_runnable['unique_key'] : $_runnable['deferred_id']));
+                !empty($_runnable['unique_key']) ? $_runnable['unique_key'] : $_runnable['deferred_id']
+            ));
             echo("\n");
 
             $executeData = @unserialize($_runnable['execute_data']);
@@ -245,4 +249,3 @@ switch ($action) {
         echo("\n");
         break;
 }
-

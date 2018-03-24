@@ -3,20 +3,16 @@
 class bdImportCmd_Listener
 {
     public static function front_controller_pre_view(
-        /** @noinspection PhpUnusedParameterInspection */
         XenForo_FrontController $fc,
         XenForo_ControllerResponse_Abstract &$controllerResponse,
         XenForo_ViewRenderer_Abstract &$viewRenderer,
-        array &$containerParams)
-    {
+        array &$containerParams
+    ) {
         // disable deferred task for json responses
         XenForo_Application::$autoDeferredIds = array();
     }
 
-    public static function container_params(
-        /** @noinspection PhpUnusedParameterInspection */
-        array &$params,
-        XenForo_Dependencies_Abstract $dependencies)
+    public static function container_params(array &$params, XenForo_Dependencies_Abstract $dependencies)
     {
         // disable deferred task for pages (mostly cron)
         $params['hasAutoDeferred'] = false;

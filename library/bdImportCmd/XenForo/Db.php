@@ -28,7 +28,6 @@ abstract class bdImportCmd_XenForo_Db extends _XenForo_Db
     {
         // do nothing
     }
-
 }
 
 eval('class XenForo_Db extends bdImportCmd_XenForo_Db {}');

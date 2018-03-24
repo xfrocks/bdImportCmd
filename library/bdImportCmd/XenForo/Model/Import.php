@@ -16,5 +16,4 @@ class bdImportCmd_XenForo_Model_Import extends XFCP_bdImportCmd_XenForo_Model_Im
 
         return $importer;
     }
-
 }

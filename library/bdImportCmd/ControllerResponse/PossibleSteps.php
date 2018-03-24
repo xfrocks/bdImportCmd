@@ -27,7 +27,6 @@ class bdImportCmd_ControllerResponse_PossibleSteps extends XenForo_ControllerRes
 
         return $response;
     }
-
 }
 
 class bdImportCmd_ControllerResponse_PossibleSteps_ControllerRequestHttpPost extends Zend_Controller_Request_Http
@@ -36,5 +35,4 @@ class bdImportCmd_ControllerResponse_PossibleSteps_ControllerRequestHttpPost ext
     {
         return 'POST';
     }
-
 }

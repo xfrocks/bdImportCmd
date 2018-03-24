@@ -25,5 +25,4 @@ class bdImportCmd_XenForo_ControllerAdmin_Import extends XFCP_bdImportCmd_XenFor
 
         return $response;
     }
-
 }

@@ -31,8 +31,6 @@ abstract class bdImportCmd_XenForo_Dependencies_Admin extends _XenForo_Dependenc
     {
         return new XenForo_RouteMatch('XenForo_ControllerAdmin_Import', 'import');
     }
-
-
 }
 
 eval('class XenForo_Dependencies_Admin extends bdImportCmd_XenForo_Dependencies_Admin {}');

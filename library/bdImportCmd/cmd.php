@@ -145,7 +145,6 @@ if (IMPORT_CMD_FORK > 0) {
 $forkTimeStart = microtime(true);
 
 while (true) {
-
     $dispatchTimeStart = microtime(true);
     $controllerResponse = $fc->dispatch($routeMatch);
 
@@ -162,7 +161,9 @@ while (true) {
     bdImportCmd_Helper_Terminal::log(
         "\t job #%d: time = %.2fs (total %.2fs), mem = %.2fM/%.2fM",
         IMPORT_CMD_FORK,
-        $dispatchTime, $forkTime,
-        $memoryUsage, $memoryUsagePeak
+        $dispatchTime,
+        $forkTime,
+        $memoryUsage,
+        $memoryUsagePeak
     );
 }

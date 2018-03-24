@@ -39,8 +39,6 @@ abstract class bdImportCmd_XenForo_FrontController extends _XenForo_FrontControl
 
         return $controller;
     }
-
-
 }
 
 eval('class XenForo_FrontController extends bdImportCmd_XenForo_FrontController {}');

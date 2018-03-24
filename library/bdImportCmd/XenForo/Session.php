@@ -44,7 +44,6 @@ abstract class bdImportCmd_XenForo_Session extends _XenForo_Session
     {
         return;
     }
-
 }
 
 eval('class XenForo_Session extends bdImportCmd_XenForo_Session {}');
