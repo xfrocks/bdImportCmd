@@ -39,7 +39,8 @@ if (isset($opt['l']) || isset($opt['list'])) {
 require(dirname(__FILE__) . '/bootstrap.php');
 
 if (XenForo_Application::isRegistered('_bdCloudServerHelper_readonly')) {
-    die('Cannot run with [bd] Cloud Server Helper READONLY mode enabled.');
+    echo('Cannot run with [bd] Cloud Server Helper READONLY mode enabled.');
+    exit(1);
 }
 
 /** @var XenForo_Model_Deferred $deferredModel */
@@ -142,35 +143,29 @@ switch ($action) {
         } elseif (!empty($opt['params'])) {
             $params = $opt['params'];
         }
-        parse_str($params, $params);
-        if (!empty($params)) {
+        $paramsArray = [];
+        parse_str($params, $paramsArray);
+        if (!empty($paramsArray)) {
             $executeData = unserialize($deferred['execute_data']);
-            $executeData = XenForo_Application::mapMerge($executeData, $params);
+            $executeData = XenForo_Application::mapMerge($executeData, $paramsArray);
             $deferred['execute_data'] = serialize($executeData);
         }
         /* finished overwriting task execute data */
 
         $GLOBALS['_terminate'] = false;
-        if (function_exists('pcntl_signal')) {
-            $signalFunc = function () {
-                echo("\nTerminating...");
-                $GLOBALS["_terminate"] = true;
-            };
-            pcntl_signal(SIGINT, $signalFunc);
-            pcntl_signal(SIGTERM, $signalFunc);
-        } else {
-            echo("Signal support is not available, Ctrl+C to stop running may cause incomplete task data!\n");
-            $signalFunc = '';
-        }
+        $signalFunc = function () {
+            echo("\nTerminating...");
+            $GLOBALS["_terminate"] = true;
+        };
+        pcntl_signal(SIGINT, $signalFunc);
+        pcntl_signal(SIGTERM, $signalFunc);
 
         echo(sprintf("Start running task %s @ %s...\n", $uniqueKey, gmdate('c')));
         $i = 0;
         $iStep = max(1, $config['runsPerReport']);
         $startTime = microtime(true);
         while (true) {
-            if ($signalFunc !== '') {
-                pcntl_signal_dispatch();
-            }
+            pcntl_signal_dispatch();
 
             if ($GLOBALS['_terminate'] === true) {
                 $response = false;
